@@ -251,17 +251,18 @@ ol.interaction.Select.handleEvent = function(mapBrowserEvent) {
          * @param {ol.layer.Layer} layer Layer.
          */
         function(feature, layer) {
-          var index = goog.array.indexOf(features.getArray(), feature);
-          if (index == -1) {
-            if (add || toggle) {
-              if (this.filter_(feature, layer)) {
+          if (this.filter_(feature, layer)) {
+            var index = goog.array.indexOf(features.getArray(), feature);
+            if (index == -1) {
+              if (add || toggle) {
                 selected.push(feature);
               }
+            } else {
+              if (remove || toggle) {
+                deselected.push(feature);
+              }
             }
-          } else {
-            if (remove || toggle) {
-              deselected.push(feature);
-            }
+            return !this.multi_;
           }
         }, this, this.layerFilter_);
     var i;
