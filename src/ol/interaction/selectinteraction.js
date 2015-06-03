@@ -3,11 +3,11 @@ goog.provide('ol.interaction.Select');
 goog.require('goog.array');
 goog.require('goog.asserts');
 goog.require('goog.events');
-goog.require('goog.events.Event');
 goog.require('goog.functions');
 goog.require('ol.CollectionEventType');
 goog.require('ol.Feature');
 goog.require('ol.FeatureOverlay');
+goog.require('ol.MapBrowserEvent');
 goog.require('ol.events.condition');
 goog.require('ol.geom.GeometryType');
 goog.require('ol.interaction.Interaction');
@@ -36,12 +36,14 @@ ol.SelectEventType = {
  * @param {string} type The event type.
  * @param {Array.<ol.Feature>} selected Selected features.
  * @param {Array.<ol.Feature>} deselected Deselected features.
+ * @param {ol.MapBrowserEvent} mapBrowserEvent
  * @implements {oli.SelectEvent}
- * @extends {goog.events.Event}
+ * @extends {ol.MapBrowserEvent}
  * @constructor
  */
-ol.SelectEvent = function(type, selected, deselected) {
-  goog.base(this, type);
+ol.SelectEvent = function(type, selected, deselected, mapBrowserEvent) {
+  goog.base(this, type, mapBrowserEvent.map, mapBrowserEvent.browserEvent,
+      mapBrowserEvent.dragging, mapBrowserEvent.frameState);
 
   /**
    * Selected features array.
@@ -57,7 +59,7 @@ ol.SelectEvent = function(type, selected, deselected) {
    */
   this.deselected = deselected;
 };
-goog.inherits(ol.SelectEvent, goog.events.Event);
+goog.inherits(ol.SelectEvent, ol.MapBrowserEvent);
 
 
 
@@ -242,7 +244,8 @@ ol.interaction.Select.handleEvent = function(mapBrowserEvent) {
   }
   if (change) {
     this.dispatchEvent(
-        new ol.SelectEvent(ol.SelectEventType.SELECT, selected, deselected));
+        new ol.SelectEvent(ol.SelectEventType.SELECT, selected, deselected,
+        mapBrowserEvent));
   }
   return ol.events.condition.pointerMove(mapBrowserEvent);
 };
